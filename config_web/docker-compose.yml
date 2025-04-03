@@ -1,0 +1,55 @@
+services:
+  web:
+    build: .
+    container_name: web
+    hostname: web
+    depends_on:
+      - php
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./html/:/var/www/html
+      - ../certificate/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+      - ../certificate/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
+    networks:
+      - api
+  php:
+    build: ./php
+    container_name: php
+    hostname: php
+    depends_on:
+      - db
+    environment:
+      MYSQL_DATABASE: ${DATABASE}
+      MYSQL_USER: ${PHP_USER}
+      MYSQL_PASSWORD: ${PHP_PASS}
+      MYSQL_HOST: ${PHP_HOST}
+    volumes:
+      - ./html/:/var/www/html
+    networks:
+      - api
+      - db
+    env_file:
+      - /home/sean/site_web_tp6/.env
+  db:
+    image: mariadb
+    container_name: db
+    hostname: db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
+      MYSQL_DATABASE: ${DATABASE}
+      MYSQL_USER: ${USER_DB}
+      MYSQL_PASSWORD: ${USER_PASS}
+    volumes:
+      - ./db/:/var/lib/mysql
+      - ./db/sql/:/docker-entrypoint-initdb.d
+      - ./db/conf/my-resolve.cnf:/etc/mysql/conf.d/my-resolve.cnf
+    networks:
+      - db
+    env_file:
+      - /home/sean/site_web_tp6/.env
+
+networks:
+  api:
+  db:

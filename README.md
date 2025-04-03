@@ -1,3 +1,3 @@
 # Repo Admin 2
 
-# Sean Vergauwen et Edouard Adam, Groupe 2TL2-3
+# Sean Vergauwen, Edouard Adam et Thimothy Truong, Groupe 2TL2-3
