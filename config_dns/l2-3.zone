@@ -1,0 +1,16 @@
+$TTL 86400
+@   IN  SOA ns.l2-3.ephec-ti.be. admin.l2-3.ephec-ti.be. (
+        2024031802  ; Serial
+        3600        ; Refresh
+        1800        ; Retry
+        604800      ; Expire
+        86400 )     ; Minimum TTL
+
+@   IN  NS  ns.l2-3.ephec-ti.be.
+
+ns IN  A   54.36.181.111
+www IN  A   54.36.183.20
+blog IN A   54.36.183.20
+
+$INCLUDE /etc/bind/Kl2-3.ephec-ti.be.+013+09782.key
+$INCLUDE /etc/bind/Kl2-3.ephec-ti.be.+013+65088.key
