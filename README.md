@@ -1,6 +1,6 @@
 # Repo Admin 2
 
-# Sean Vergauwen, Edouard Adam et Thimothy Truong, Groupe 2TL2-3
+# Sean Vergauwen, Edouard Adam et Timothy Truong, Groupe 2TL2-3
 
 [Page principale](https://www.l2-3.ephec-ti.be/)
 
