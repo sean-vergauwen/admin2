@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  db:
+    image: L2sisi3/woody_database:1.5
+    cap_add:
+      - SYS_NICE
+    restart: always
+    environment:
+      - MYSQL_DATABASE=woody
+      - MYSQL_ROOT_PASSWORD=pass
+    ports:
+      - '3306:3306'
+    networks:
+      - backend
+
+  api:
+    image: L2sisi3/woody_api:1.5
+    restart: always
+    environment:
+      - REDDIS_URL=redis://redis:6379
+    deploy:
+      replicas: 6
+    networks:
+      - backend
+
+  front:
+    image: L2sisi3/woody_front:1.5
+    networks:
+      - frontend
+
+  reverse:
+    image: L2sisi3/woody_rp:1.5
+    ports:
+      - "80:8080"
+    depends_on:
+      - front
+      - api
+    networks:
+      - frontend
+      - backend
+
+  redis:
+    image: redis:7
+    networks:
+      - backend
+    command: ["redis-server", "--maxmemory", "100mb", "--maxmemory-policy", "allkeys-lru"]
+
+networks:
+  frontend:
+  backend:
