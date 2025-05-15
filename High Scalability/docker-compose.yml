@@ -1,0 +1,116 @@
+version: "3.9"
+
+services:
+  db:
+    image: L2sisi3/woody_database:1.5
+    cap_add:
+      - SYS_NICE
+    environment:
+      - MYSQL_DATABASE=woody
+      - MYSQL_ROOT_PASSWORD=pass
+    ports:
+      - '3306:3306'
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    # ports:
+    #   - "15672:15672"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  misc:
+    image: L2sisi3/woody_misc:1.5
+    environment:
+      - REDIS_HOST=redis
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - db
+
+  product:
+    image: L2sisi3/woody_product:1.5
+    environment:
+      - REDIS_HOST=redis
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - redis
+      - db
+
+  order:
+    image: L2sisi3/woody_order:1.5
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbitmq
+      - db
+
+  order-worker:
+    image: L2sisi3/woody_order_worker:1.5
+    deploy:
+      replicas: 5
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbitmq
+      - db
+
+  front:
+    image: L2sisi3/woody_front:1.5
+
+  reverse:
+    image: L2sisi3/woody_rp:1.5
+    ports:
+      - "80:8080"
+    depends_on:
+      - front
+      - misc
+      - product
+      - order
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--maxmemory", "100mb", "--maxmemory-policy", "allkeys-lru"]
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  default:
+    driver: overlay
+
+volumes:
+  rabbitmq-data:
