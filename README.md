@@ -2,6 +2,8 @@
 
 # Sean Vergauwen, Edouard Adam et Timothy Truong, Groupe 2TL2-3
 
+(Liens morts à présent)
+
 [Page principale](https://www.l2-3.ephec-ti.be/)
 
 [Boutique Woodytoys](https://www.l2-3.ephec-ti.be/products.php)
